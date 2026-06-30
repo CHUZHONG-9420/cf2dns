@@ -26,9 +26,9 @@ jobs:
           DOMAINS: ${{ secrets.DOMAINS }}
           PROVIDER: ${{ secrets.PROVIDER }}
         run: |
-          python cf2dns_actions.py 2>&1 | sed -E \
-            -e 's/----DOMAIN: [^ ]+/----DOMAIN: **REDACTED**/g' \
-            -e 's/----SUBDOMAIN: [^ ]+/----SUBDOMAIN: **REDACTED**/g' \
-            -e 's/----VALUE: [^ ]+/----VALUE: **REDACTED**/g' \
-            -e 's/----RECORDID: [^ ]+/----RECORDID: **REDACTED**/g' \
-            -e 's/----RECORDLINE: [^ ]+/----RECORDLINE: **REDACTED**/g'
+          python cf2dns_actions.py 2>&1 | python -c "
+          import sys, re
+          for line in sys.stdin:
+              line = re.sub(r'(----(?:DOMAIN|SUBDOMAIN|VALUE|RECORDID|RECORDLINE): ).+?(?=----)', r'\1**REDACTED**', line)
+              print(line, end='')
+          "
