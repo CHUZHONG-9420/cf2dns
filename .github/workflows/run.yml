@@ -26,9 +26,4 @@ jobs:
           DOMAINS: ${{ secrets.DOMAINS }}
           PROVIDER: ${{ secrets.PROVIDER }}
         run: |
-          python cf2dns_actions.py 2>&1 | python -c "
-          import sys, re
-          for line in sys.stdin:
-              line = re.sub(r'(----(?:DOMAIN|SUBDOMAIN|VALUE|RECORDID|RECORDLINE): ).+?(?=----)', r'\1**REDACTED**', line)
-              print(line, end='')
-          "
+          python cf2dns_actions.py 2>&1 | python redact_logs.py
